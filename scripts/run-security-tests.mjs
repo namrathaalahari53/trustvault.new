@@ -10,6 +10,7 @@ async function ensureServerRunning() {
     if (probe.ok) return false;
   } catch {}
   const testPort = Number(process.env.TEST_PORT || 5198);
+  process.env.API_PORT = String(testPort);
   process.env.PORT = String(testPort);
   BASE_URL = `http://localhost:${testPort}/api`;
   await import('./local-api-server.mjs');

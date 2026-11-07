@@ -24,7 +24,7 @@ if (fs.existsSync(envPath)) {
   }
 }
 
-const PORT = Number(process.env.PORT || 5106);
+const PORT = Number(process.env.API_PORT || process.env.PORT || 5106);
 const JWT_ISSUER = process.env.Jwt__Issuer || 'TrustVault';
 const JWT_AUDIENCE = process.env.Jwt__Audience || 'TrustVault';
 const JWT_KEY = Buffer.from(

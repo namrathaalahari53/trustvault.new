@@ -1,0 +1,15 @@
+{
+  "name": "trustvault-corporate-platform",
+  "version": "3.0.0",
+  "private": true,
+  "type": "module",
+  "description": "TrustVault Corporate Zero-Trust Document Management Platform",
+  "engines": {
+    "node": ">=22.5.0"
+  },
+  "scripts": {
+    "start": "node scripts/start-all.mjs",
+    "start:api": "node scripts/local-api-server.mjs",
+    "test": "node scripts/run-security-tests.mjs"
+  }
+}

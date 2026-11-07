@@ -1,0 +1,26 @@
+# Render Blueprint — TrustVault Corporate Zero-Trust Document Platform
+# Connect https://github.com/namrathaalahari53/trustvault.new in Render Dashboard -> New -> Blueprint
+services:
+  - type: web
+    name: trustvault-corporate
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    plan: free
+    autoDeploy: true
+    healthCheckPath: /api/system/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: API_PORT
+        value: "5106"
+      - key: SCANNER_MODE
+        value: development-allow
+      - key: JWT_SIGNING_KEY
+        generateValue: true
+      - key: AUDIT_HMAC_KEY
+        generateValue: true
+      - key: ADMIN_BOOTSTRAP_EMAIL
+        value: admin@example.local
+      - key: ADMIN_BOOTSTRAP_PASSWORD
+        value: ChangeThis-Admin-Password-2026!

@@ -1,8 +1,10 @@
 import http from 'node:http';
-import './local-api-server.mjs';
 
-const FRONTEND_PORT = Number(process.env.FRONTEND_PORT || 4200);
-const API_PORT = Number(process.env.PORT || 5106);
+const FRONTEND_PORT = Number(process.env.FRONTEND_PORT || process.env.PORT || 4200);
+const API_PORT = Number(process.env.API_PORT || 5106);
+process.env.API_PORT = String(API_PORT);
+
+await import('./local-api-server.mjs');
 
 const spaHtml = `<!doctype html>
 <html lang="en">
@@ -1804,7 +1806,7 @@ const spaHtml = `<!doctype html>
 </html>`;
 
 const frontendServer = http.createServer((req, res) => {
-  if (req.url && req.url.startsWith('/api/')) {
+  if (req.url && (req.url.startsWith('/api/') || req.url.startsWith('/swagger'))) {
     const proxyReq = http.request(
       {
         hostname: '127.0.0.1',

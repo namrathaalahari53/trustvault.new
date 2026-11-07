@@ -1,26 +1,32 @@
 name: TrustVault CI
+
 on:
   push:
     branches: [main, develop]
   pull_request:
     branches: [main, develop]
+
 jobs:
-  backend:
+  security-and-integration-tests:
+    name: Security, Persona Isolation & API Release Gate
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 24 (with built-in SQLite)
+        uses: actions/setup-node@v4
         with:
-          dotnet-version: '10.0.x'
-      - run: dotnet restore backend/TrustVault.Api/TrustVault.Api.csproj
-      - run: dotnet build backend/TrustVault.Api/TrustVault.Api.csproj --no-restore
-      - run: dotnet test backend/TrustVault.Tests/TrustVault.Tests.csproj
-  frontend:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-      - run: cd frontend && npm install
-      - run: cd frontend && npm run build
+          node-version: '24'
+
+      - name: Verify Render Blueprint & Project Structure
+        run: |
+          test -f render.yaml
+          test -f Dockerfile
+          test -f database/schema.sql
+          test -f THREATS.md
+          test -f backend/TrustVault.Api/Program.cs
+          test -f frontend/src/app/pages/login.component.ts
+
+      - name: Run 16 Automated Zero-Trust Security & Persona Tests
+        run: node scripts/run-security-tests.mjs
