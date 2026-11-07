@@ -1,0 +1,18 @@
+{
+  "recommendations": [
+    "ms-dotnettools.csdevkit",
+    "ms-dotnettools.csharp",
+    "ms-dotnettools.vscode-dotnet-runtime",
+    "humao.rest-client",
+    "ms-azuretools.vscode-docker",
+    "ckolkman.vscode-postgres",
+    "eamodio.gitlens",
+    "github.vscode-pull-request-github",
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "editorconfig.editorconfig",
+    "ms-playwright.playwright",
+    "sonarsource.sonarlint-vscode"
+  ]
+}
+

@@ -1,0 +1,63 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-trustvault}
+      POSTGRES_USER: ${POSTGRES_USER:-trustvault}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+    volumes:
+      - trustvault-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-trustvault} -d ${POSTGRES_DB:-trustvault}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  clamav:
+    image: clamav/clamav:stable
+    ports:
+      - "3310:3310"
+    healthcheck:
+      test: ["CMD-SHELL", "clamdscan --ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  api:
+    build:
+      context: ./backend
+      dockerfile: TrustVault.Api/Dockerfile
+    environment:
+      ASPNETCORE_URLS: http://+:5106
+      ConnectionStrings__TrustVault: Host=postgres;Port=5432;Database=${POSTGRES_DB:-trustvault};Username=${POSTGRES_USER:-trustvault};Password=${POSTGRES_PASSWORD}
+      Jwt__SigningKey: ${JWT_SIGNING_KEY:?Set JWT_SIGNING_KEY in .env}
+      Audit__HmacKey: ${AUDIT_HMAC_KEY:?Set AUDIT_HMAC_KEY in .env}
+      AdminBootstrap__Email: ${ADMIN_BOOTSTRAP_EMAIL:-}
+      AdminBootstrap__Password: ${ADMIN_BOOTSTRAP_PASSWORD:-}
+      Storage__RootPath: /app/private-storage
+      Frontend__Origin: http://localhost:4200
+      SCANNER_MODE: ${SCANNER_MODE:-clamav}
+      ClamAV__Host: clamav
+      ClamAV__Port: 3310
+    volumes:
+      - trustvault-files:/app/private-storage
+    ports:
+      - "5106:5106"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      clamav:
+        condition: service_started
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "4200:80"
+    depends_on:
+      - api
+
+volumes:
+  trustvault-db:
+  trustvault-files:
